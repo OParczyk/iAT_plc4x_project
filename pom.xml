@@ -6,4 +6,12 @@
 	<artifactId>iAT_plc4x_project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>iAT PLC4X Project</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.plc4x</groupId>
+			<artifactId>plc4j-driver-opcua</artifactId>
+			<version>0.8.0</version>
+		</dependency>
+	</dependencies>
 </project>
