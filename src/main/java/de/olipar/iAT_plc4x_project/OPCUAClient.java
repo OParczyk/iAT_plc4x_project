@@ -28,7 +28,7 @@ public class OPCUAClient {
 			this.is_connected = true;
 			this.plcConnection = plcConnection;
 		} catch (PlcConnectionException e) {
-			logger.severe("Connection to " + server_url + " failed: " + e.getMessage());
+			logger.warning("Connection to " + server_url + " failed: " + e.getMessage());
 		}
 	}
 }
