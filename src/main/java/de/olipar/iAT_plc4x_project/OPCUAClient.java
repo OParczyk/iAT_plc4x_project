@@ -18,8 +18,11 @@ public class OPCUAClient {
 	private List<Pair<String, String>> readItemList;
 
 	public OPCUAClient(String server_url, Logger logger) {
+		if (server_url == null) {
+			throw new NullPointerException("OPC UA server URL MUST NOT be null!");
+		}
 		if (!server_url.startsWith("opcua:")) {
-			throw new IllegalArgumentException("OPC UA server URL must start with 'opcua:'!");
+			throw new IllegalArgumentException("OPC UA server URL MUST start with 'opcua:'!");
 		}
 		this.server_url = server_url;
 		this.logger = logger;
