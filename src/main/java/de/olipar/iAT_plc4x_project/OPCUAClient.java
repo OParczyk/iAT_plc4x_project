@@ -10,7 +10,6 @@ public class OPCUAClient {
 
 	private String server_url;
 	private Logger logger;
-	private boolean is_connected = false;
 	private PlcConnection plcConnection = null;
 
 	public OPCUAClient(String server_url, Logger logger) {
@@ -25,7 +24,6 @@ public class OPCUAClient {
 		try {
 			PlcConnection plcConnection = new PlcDriverManager().getConnection(server_url);
 			logger.info("Connected to OPC UA server");
-			this.is_connected = true;
 			this.plcConnection = plcConnection;
 		} catch (PlcConnectionException e) {
 			logger.warning("Connection to " + server_url + " failed: " + e.getMessage());
