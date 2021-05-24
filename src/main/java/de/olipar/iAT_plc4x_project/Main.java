@@ -17,6 +17,8 @@ public class Main {
 		mqtt = new MyMQTTClient("tcp://test.mosquitto.org:1883", logger);
 		mqtt.connect();
 
+		opc.addReadItem("simulatorwert", "ns=2;s=items-lrBeltDriveSpeed:UDINT");
+
 	}
 
 }
