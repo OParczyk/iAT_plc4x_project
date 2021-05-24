@@ -4,9 +4,11 @@ import java.util.logging.Logger;
 
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 public class MyMQTTClient {
@@ -31,6 +33,22 @@ public class MyMQTTClient {
 		} catch (MqttException e) {
 			logger.warning("An MQTT Exception occurred: " + e.getMessage());
 			logger.warning("Caused by " + e.getCause());
+		}
+	}
+
+	public void connect() {
+		MqttConnectOptions connOpts = new MqttConnectOptions();
+		connOpts.setCleanSession(true);
+		try {
+			client.connect(connOpts);
+		} catch (MqttSecurityException e) {
+			logger.warning("An MQTT Security Exception occurred connecting to broker: " + e.getMessage());
+			logger.warning("Caused by " + e.getCause());
+			logger.warning("Connection could not be established.");
+		} catch (MqttException e) {
+			logger.warning("An MQTT Exception occurred while connecting to broker: " + e.getMessage());
+			logger.warning("Caused by " + e.getCause());
+			logger.warning("Connection could not be established.");
 		}
 	}
 
