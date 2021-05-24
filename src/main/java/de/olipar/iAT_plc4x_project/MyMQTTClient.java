@@ -65,7 +65,12 @@ public class MyMQTTClient {
 		if (qos < 0 || qos > 2) {
 			throw new IllegalArgumentException("MQTT QoS must be 0, 1 or 2");
 		}
-
+		if (!client.isConnected()) {
+			connect();
+			if (!client.isConnected()) {
+				return;
+			}
+		}
 		MqttMessage message = new MqttMessage(payload);
 		message.setQos(qos);
 		try {
