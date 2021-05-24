@@ -84,5 +84,6 @@ public class MyMQTTClient {
 			logger.warning("Caused by " + e.getCause());
 			logger.warning("Message might not have been published.");
 		}
+		logger.info("Published '" + new String(payload) + "' to '" + topic);
 	}
 }
