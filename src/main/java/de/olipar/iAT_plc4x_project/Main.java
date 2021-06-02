@@ -1,6 +1,8 @@
 package de.olipar.iAT_plc4x_project;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
@@ -17,6 +19,7 @@ public class Main extends TimerTask implements MqttCallback {
 	private static MyMQTTClient mqtt;
 	private static String mqttTopicPrefix = "iat/test";
 	private static final long TRANSLATE_CYCLE_MS = 2000;
+	private static Map<String, String> topicToNodeIDMap;
 
 	public static void main(String[] args) {
 		logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -26,11 +29,18 @@ public class Main extends TimerTask implements MqttCallback {
 		mqtt.setCallback(new Main());
 		mqtt.connect();
 
+		topicToNodeIDMap = new HashMap<String, String>();
+
 		opc.addReadItem("simulatorwert", "ns=2;s=items-lrBeltDriveSpeed:UDINT");
 		// Get OPC values and sent to MQTT every TRANSLATE_CYCLE_MS
 		Timer timer = new Timer();
 		timer.schedule(new Main(), 0, TRANSLATE_CYCLE_MS);
 
+	}
+
+	private void subscribeToChannel(String topicSuffix, String nodeID) {
+		topicToNodeIDMap.put(mqttTopicPrefix + "/" + topicSuffix, nodeID);
+		mqtt.subscribe(mqttTopicPrefix + "/" + topicSuffix);
 	}
 
 	@Override
@@ -49,7 +59,9 @@ public class Main extends TimerTask implements MqttCallback {
 
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		logger.info("Received message on " + topic + ": " + new String(message.getPayload()));
-		// TODO: send content to opc ua
+
+		// TODO: Check if casting is necessary.
+		opc.writeValue(topic, topicToNodeIDMap.get(mqttTopicPrefix + "/" + topic), message);
 	}
 
 	public void deliveryComplete(IMqttDeliveryToken token) {
