@@ -3,7 +3,6 @@ package de.olipar.iAT_plc4x_project;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 
 import org.apache.plc4x.java.PlcDriverManager;
@@ -12,6 +11,9 @@ import org.apache.plc4x.java.api.exceptions.PlcConnectionException;
 import org.apache.plc4x.java.api.exceptions.PlcUnsupportedOperationException;
 import org.apache.plc4x.java.api.messages.PlcReadRequest;
 import org.apache.plc4x.java.api.messages.PlcReadResponse;
+import org.apache.plc4x.java.api.messages.PlcWriteRequest;
+import org.apache.plc4x.java.api.messages.PlcWriteResponse;
+import org.apache.plc4x.java.api.types.PlcResponseCode;
 import org.javatuples.Pair;
 
 public class OPCUAClient {
@@ -106,5 +108,60 @@ public class OPCUAClient {
 		}
 
 		return ret;
+	}
+
+	public void writeValue(String fieldName, String nodeID, Object... values) {
+		if (fieldName == null) {
+			throw new NullPointerException("fieldName MUST NOT be null!");
+		}
+		if (fieldName.isEmpty()) {
+			throw new IllegalArgumentException("fieldName MUST NOT be empty");
+		}
+		if (nodeID == null) {
+			throw new NullPointerException("nodeID MUST NOT be null!");
+		}
+		if (nodeID.isEmpty()) {
+			throw new IllegalArgumentException("nodeID MUST NOT be empty");
+		}
+		if (values == null) {
+			throw new NullPointerException("values MUST NOT be null!");
+		}
+
+		PlcWriteRequest.Builder writeRequestBuilder;
+		PlcWriteResponse response = null;
+
+		if (!plcConnection.isConnected()) {
+			logger.warning("We aren't conntected to opc ua. Trying to connect...");
+			connect();
+			if (!plcConnection.isConnected()) {
+				logger.warning("Reconnect to opc unsuccessful.");
+				return;
+			}
+		}
+		try {
+			writeRequestBuilder = plcConnection.writeRequestBuilder();
+		} catch (PlcUnsupportedOperationException e) {
+			logger.warning("We cannot write to " + server_url);
+			logger.warning("Because of: " + e.getMessage());
+			return;
+		}
+		writeRequestBuilder.addItem(server_url, server_url, values);
+		PlcWriteRequest request = writeRequestBuilder.build();
+
+		try {
+			// blocking is fine since this will be called indirectly by mqtt asynchronously.
+			response = request.execute().get();
+		} catch (InterruptedException e) {
+			logger.warning("Interrupt occured during write request to opc ua server");
+		} catch (ExecutionException e) {
+			logger.warning("Execution of write request to opc ua server was unsuccessful:");
+			logger.warning(e.getCause().getMessage());
+		}
+
+		if (response.getResponseCode(fieldName) == PlcResponseCode.OK) {
+			logger.info("Value[" + fieldName + "] successfully updated");
+		} else {
+			logger.warning("Error[" + fieldName + "]: " + response.getResponseCode(fieldName).name());
+		}
 	}
 }
