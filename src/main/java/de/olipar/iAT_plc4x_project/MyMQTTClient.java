@@ -3,6 +3,7 @@ package de.olipar.iAT_plc4x_project;
 import java.util.logging.Logger;
 
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -85,5 +86,28 @@ public class MyMQTTClient {
 			logger.warning("Message might not have been published.");
 		}
 		logger.info("Published '" + new String(payload) + "' to '" + topic);
+	}
+
+	public void setCallback(MqttCallback callback) {
+		if (callback == null) {
+			throw new NullPointerException("Mqtt Callback MUST NOT be null!");
+		}
+		client.setCallback(callback);
+	}
+
+	public void subscribe(String topic) {
+		if (topic == null) {
+			throw new NullPointerException("Topic for MQTT message MUST NOT be null!");
+		}
+		if (topic.isEmpty()) {
+			throw new IllegalArgumentException("Topic for MQTT message MUST NOT be empty!");
+		}
+		try {
+			client.subscribe(topic);
+		} catch (MqttException e) {
+			logger.warning("An MQTT Exception occurred while subscribing to " + topic + ": " + e.getMessage());
+			logger.warning("Caused by " + e.getCause());
+			logger.warning("Subscription might not have been successful.");
+		}
 	}
 }
