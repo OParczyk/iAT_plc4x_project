@@ -5,9 +5,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.javatuples.Pair;
 
-public class Main extends TimerTask {
+public class Main extends TimerTask implements MqttCallback {
 
 	private static Logger logger;
 	private static OPCUAClient opc;
@@ -36,6 +39,21 @@ public class Main extends TimerTask {
 				mqtt.publish(mqttTopicPrefix + "/" + values.getValue0(), value.getBytes(), 2);
 			}
 		}
+	}
+
+	public void connectionLost(Throwable cause) {
+		logger.warning("MQTT lost connection, retrying...");
+		mqtt.connect();
+	}
+
+	public void messageArrived(String topic, MqttMessage message) throws Exception {
+		logger.info("Received message on " + topic + ": " + new String(message.getPayload()));
+		// TODO: send content to opc ua
+	}
+
+	public void deliveryComplete(IMqttDeliveryToken token) {
+		return;
+
 	}
 
 }
