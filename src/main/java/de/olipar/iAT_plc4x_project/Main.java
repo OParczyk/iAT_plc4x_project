@@ -23,6 +23,7 @@ public class Main extends TimerTask implements MqttCallback {
 		opc = new OPCUAClient("opcua:tcp://localhost:12686/", logger);
 		opc.connect();
 		mqtt = new MyMQTTClient("tcp://test.mosquitto.org:1883", logger);
+		mqtt.setCallback(new Main());
 		mqtt.connect();
 
 		opc.addReadItem("simulatorwert", "ns=2;s=items-lrBeltDriveSpeed:UDINT");
