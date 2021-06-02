@@ -17,7 +17,7 @@ public class Main extends TimerTask implements MqttCallback {
 	private static Logger logger;
 	private static OPCUAClient opc;
 	private static MyMQTTClient mqtt;
-	private static String mqttTopicPrefix = "iat/test";
+	private static String mqttTopicPrefix = "iat/test/";
 	private static final long TRANSLATE_CYCLE_MS = 2000;
 	private static Map<String, String> topicToNodeIDMap;
 
@@ -39,15 +39,15 @@ public class Main extends TimerTask implements MqttCallback {
 	}
 
 	private void subscribeToChannel(String topicSuffix, String nodeID) {
-		topicToNodeIDMap.put(mqttTopicPrefix + "/" + topicSuffix, nodeID);
-		mqtt.subscribe(mqttTopicPrefix + "/" + topicSuffix);
+		topicToNodeIDMap.put(mqttTopicPrefix + topicSuffix, nodeID);
+		mqtt.subscribe(mqttTopicPrefix + topicSuffix);
 	}
 
 	@Override
 	public void run() {
 		for (Pair<String, List<String>> values : opc.readValues()) {
 			for (String value : values.getValue1()) {
-				mqtt.publish(mqttTopicPrefix + "/" + values.getValue0(), value.getBytes(), 2);
+				mqtt.publish(mqttTopicPrefix + values.getValue0(), value.getBytes(), 2);
 			}
 		}
 	}
@@ -61,7 +61,7 @@ public class Main extends TimerTask implements MqttCallback {
 		logger.info("Received message on " + topic + ": " + new String(message.getPayload()));
 
 		// TODO: Check if casting is necessary.
-		opc.writeValue(topic, topicToNodeIDMap.get(mqttTopicPrefix + "/" + topic), message);
+		opc.writeValue(topic, topicToNodeIDMap.get(mqttTopicPrefix + topic), message);
 	}
 
 	public void deliveryComplete(IMqttDeliveryToken token) {
