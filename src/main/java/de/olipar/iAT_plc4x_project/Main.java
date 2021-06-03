@@ -12,7 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.javatuples.Pair;
 
-public class Main extends TimerTask implements MqttCallback {
+public class Main implements MqttCallback {
 
 	private static Logger logger;
 	private static OPCUAClient opc;
@@ -34,22 +34,14 @@ public class Main extends TimerTask implements MqttCallback {
 		opc.addReadItem("simulatorwert", "ns=2;s=items-lrBeltDriveSpeed:UDINT");
 		// Get OPC values and sent to MQTT every TRANSLATE_CYCLE_MS
 		Timer timer = new Timer();
-		timer.schedule(new Main(), 0, TRANSLATE_CYCLE_MS);
+		Translator translator = new Translator(mqtt, mqttTopicPrefix, opc);
+		timer.schedule(translator, 0, TRANSLATE_CYCLE_MS);
 
 	}
 
 	private void subscribeToChannel(String topicSuffix, String nodeID) {
 		topicToNodeIDMap.put(mqttTopicPrefix + topicSuffix, nodeID);
 		mqtt.subscribe(mqttTopicPrefix + topicSuffix);
-	}
-
-	@Override
-	public void run() {
-		for (Pair<String, List<String>> values : opc.readValues()) {
-			for (String value : values.getValue1()) {
-				mqtt.publish(mqttTopicPrefix + values.getValue0(), value.getBytes(), 2);
-			}
-		}
 	}
 
 	public void connectionLost(Throwable cause) {
