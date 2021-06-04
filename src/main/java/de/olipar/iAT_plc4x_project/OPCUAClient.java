@@ -145,7 +145,7 @@ public class OPCUAClient {
 			logger.warning("Because of: " + e.getMessage());
 			return;
 		}
-		writeRequestBuilder.addItem(server_url, server_url, values);
+		writeRequestBuilder.addItem(fieldName, nodeID, values);
 		PlcWriteRequest request = writeRequestBuilder.build();
 
 		try {
