@@ -12,12 +12,12 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-public class MyMQTTClient {
+public class MQTTClientWrapper {
 	private String clientID;
 	private MqttClient client;
 	private Logger logger;
 
-	public MyMQTTClient(String brokerURL, Logger logger) {
+	public MQTTClientWrapper(String brokerURL, Logger logger) {
 		if (brokerURL == null) {
 			throw new NullPointerException("MQTT broker URL MUST NOT be null!");
 		}

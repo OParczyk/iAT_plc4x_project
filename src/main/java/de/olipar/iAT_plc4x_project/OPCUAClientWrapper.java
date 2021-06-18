@@ -3,6 +3,7 @@ package de.olipar.iAT_plc4x_project;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.plc4x.java.PlcDriverManager;
@@ -15,15 +16,16 @@ import org.apache.plc4x.java.api.messages.PlcWriteRequest;
 import org.apache.plc4x.java.api.messages.PlcWriteResponse;
 import org.apache.plc4x.java.api.types.PlcResponseCode;
 import org.javatuples.Pair;
+import org.slf4j.LoggerFactory;
 
-public class OPCUAClient {
+public class OPCUAClientWrapper {
 
 	private String server_url;
 	private Logger logger;
 	private PlcConnection plcConnection;
 	private List<Pair<String, String>> readItemList;
 
-	public OPCUAClient(String server_url, Logger logger) {
+	public OPCUAClientWrapper(String server_url, Logger logger) {
 		if (server_url == null) {
 			throw new NullPointerException("OPC UA server URL MUST NOT be null!");
 		}
@@ -33,6 +35,7 @@ public class OPCUAClient {
 		this.server_url = server_url;
 		this.logger = logger;
 		readItemList = new LinkedList<Pair<String, String>>();
+
 	}
 
 	public void connect() {
@@ -86,6 +89,7 @@ public class OPCUAClient {
 		for (Pair<String, String> item : readItemList) {
 			readRequestBuilder.addItem(item.getValue0(), item.getValue1());
 		}
+
 		PlcReadRequest readRequest = readRequestBuilder.build();
 
 		try {
@@ -111,6 +115,7 @@ public class OPCUAClient {
 	}
 
 	public void writeValue(String fieldName, String nodeID, Object... values) {
+		logger.info("Writing to " + nodeID);
 		if (fieldName == null) {
 			throw new NullPointerException("fieldName MUST NOT be null!");
 		}
@@ -129,7 +134,6 @@ public class OPCUAClient {
 
 		PlcWriteRequest.Builder writeRequestBuilder;
 		PlcWriteResponse response = null;
-
 		if (!plcConnection.isConnected()) {
 			logger.warning("We aren't conntected to opc ua. Trying to connect...");
 			connect();
@@ -145,9 +149,8 @@ public class OPCUAClient {
 			logger.warning("Because of: " + e.getMessage());
 			return;
 		}
-		writeRequestBuilder.addItem(fieldName, nodeID, values);
+		writeRequestBuilder.addItem(fieldName, nodeID, values[0]);
 		PlcWriteRequest request = writeRequestBuilder.build();
-
 		try {
 			// blocking is fine since this will be called indirectly by mqtt asynchronously.
 			response = request.execute().get();
