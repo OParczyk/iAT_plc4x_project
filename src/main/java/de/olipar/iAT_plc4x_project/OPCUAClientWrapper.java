@@ -3,7 +3,6 @@ package de.olipar.iAT_plc4x_project;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.plc4x.java.PlcDriverManager;
@@ -16,7 +15,6 @@ import org.apache.plc4x.java.api.messages.PlcWriteRequest;
 import org.apache.plc4x.java.api.messages.PlcWriteResponse;
 import org.apache.plc4x.java.api.types.PlcResponseCode;
 import org.javatuples.Pair;
-import org.slf4j.LoggerFactory;
 
 public class OPCUAClientWrapper {
 
@@ -35,7 +33,6 @@ public class OPCUAClientWrapper {
 		this.server_url = server_url;
 		this.logger = logger;
 		readItemList = new LinkedList<Pair<String, String>>();
-
 	}
 
 	public void connect() {
