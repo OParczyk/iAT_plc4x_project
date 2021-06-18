@@ -6,16 +6,17 @@ import java.util.logging.Logger;
 public class Main {
 
 	private static Logger logger;
-	private static OPCUAClient opc;
-	private static MyMQTTClient mqtt;
+	private static OPCUAClientWrapper opc;
+	private static MQTTClientWrapper mqtt;
 	private static String mqttTopicPrefix = "iat/test/";
 	private static final long TRANSLATE_CYCLE_MS = 2000;
 
 	public static void main(String[] args) {
+
 		logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-		opc = new OPCUAClient("opcua:tcp://localhost:12686/", logger);
+		opc = new OPCUAClientWrapper("opcua:tcp://localhost:4840/?discovery=false", logger);
 		opc.connect();
-		mqtt = new MyMQTTClient("tcp://test.mosquitto.org:1883", logger);
+		mqtt = new MQTTClientWrapper("tcp://test.mosquitto.org:1883", logger);
 		Translator translator = new Translator(mqtt, mqttTopicPrefix, opc, logger);
 		mqtt.setCallback(translator);
 		mqtt.connect();
