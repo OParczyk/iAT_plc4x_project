@@ -16,6 +16,13 @@ import org.apache.plc4x.java.api.messages.PlcWriteResponse;
 import org.apache.plc4x.java.api.types.PlcResponseCode;
 import org.javatuples.Pair;
 
+/**
+ * Wrapper for the PLC4X OPC UA client. Deals with to be expected exceptions.
+ *
+ * @author Oliver Parczyk
+ * @version 1.0
+ * @since 1.0
+ */
 public class OPCUAClientWrapper {
 
 	private String server_url;
@@ -23,6 +30,12 @@ public class OPCUAClientWrapper {
 	private PlcConnection plcConnection;
 	private List<Pair<String, String>> readItemList;
 
+	/**
+	 * Instantiates a new Wrapper for the OPC UA Client of PLC4X
+	 *
+	 * @param server_url The OPC UA server URL to connect to
+	 * @param logger     A java.util.logging.Logger object
+	 */
 	public OPCUAClientWrapper(String server_url, Logger logger) {
 		if (server_url == null) {
 			throw new NullPointerException("OPC UA server URL MUST NOT be null!");
@@ -35,6 +48,9 @@ public class OPCUAClientWrapper {
 		readItemList = new LinkedList<Pair<String, String>>();
 	}
 
+	/**
+	 * Open connection to OPC UA server using PLC4X
+	 */
 	public void connect() {
 		try {
 			PlcConnection plcConnection = new PlcDriverManager().getConnection(server_url);
@@ -45,6 +61,12 @@ public class OPCUAClientWrapper {
 		}
 	}
 
+	/**
+	 * Adds an Item to be read to the requests to the OPC UA server
+	 *
+	 * @param name   A name given to this read Item
+	 * @param nodeID the nodeID to be read
+	 */
 	public void addReadItem(String name, String nodeID) {
 		if (name == null) {
 			throw new NullPointerException("Item name MUST NOT be null!");
@@ -61,10 +83,14 @@ public class OPCUAClientWrapper {
 		readItemList.add(new Pair<String, String>(name, nodeID));
 	}
 
+	/**
+	 * Retrieves previously added values from the OPC UA server Will convert all
+	 * values to string before returning, Casting back should be possible if
+	 * necessary. Handling all types differently is highly impractical here.
+	 *
+	 * @return A List of Pairs tying the name of the request to the response(s)
+	 */
 	public List<Pair<String, List<String>>> readValues() {
-		// We will convert all values to string before returning.
-		// Casting back should be possible if necessary
-		// Handling all types differently is impractical here.
 
 		PlcReadRequest.Builder readRequestBuilder;
 		PlcReadResponse response;
@@ -111,6 +137,13 @@ public class OPCUAClientWrapper {
 		return ret;
 	}
 
+	/**
+	 * Sends a write request to selected nodeIDs
+	 *
+	 * @param fieldName A name given to this write Item
+	 * @param nodeID    The nodeID to be written to
+	 * @param values    The values that shall be written to the nodeID
+	 */
 	public void writeValue(String fieldName, String nodeID, Object... values) {
 		logger.info("Writing to " + nodeID);
 		if (fieldName == null) {

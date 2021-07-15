@@ -12,11 +12,24 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+/**
+ * Wrapper for the Paho MQTT client. Deals with to be expected exceptions.
+ *
+ * @author Oliver Parczyk
+ * @version 1.0
+ * @since 1.0
+ */
 public class MQTTClientWrapper {
 	private String clientID;
 	private MqttClient client;
 	private Logger logger;
 
+	/**
+	 * Instantiates a new Wrapper for the Paho MQTT Client
+	 *
+	 * @param brokerURL The MQTT broker URL
+	 * @param logger    A java.util.logging.Logger object
+	 */
 	public MQTTClientWrapper(String brokerURL, Logger logger) {
 		if (brokerURL == null) {
 			throw new NullPointerException("MQTT broker URL MUST NOT be null!");
@@ -37,6 +50,9 @@ public class MQTTClientWrapper {
 		}
 	}
 
+	/**
+	 * Open connection to the MQTT broker using Paho MQTT
+	 */
 	public void connect() {
 		MqttConnectOptions connOpts = new MqttConnectOptions();
 		connOpts.setCleanSession(true);
@@ -53,6 +69,13 @@ public class MQTTClientWrapper {
 		}
 	}
 
+	/**
+	 * Publishes a payload to a topic
+	 *
+	 * @param topic   the topic to be published to
+	 * @param payload the payload to be published
+	 * @param qos     the MQTT Quality of service of this message. Either 0, 1 or 2.
+	 */
 	public void publish(String topic, byte[] payload, int qos) {
 		if (topic == null) {
 			throw new NullPointerException("Topic for MQTT message MUST NOT be null!");
@@ -88,6 +111,11 @@ public class MQTTClientWrapper {
 		logger.info("Published '" + new String(payload) + "' to '" + topic);
 	}
 
+	/**
+	 * Sets the callback function for Subscriptions
+	 *
+	 * @param callback MqttCallback implementation
+	 */
 	public void setCallback(MqttCallback callback) {
 		if (callback == null) {
 			throw new NullPointerException("Mqtt Callback MUST NOT be null!");
@@ -95,6 +123,11 @@ public class MQTTClientWrapper {
 		client.setCallback(callback);
 	}
 
+	/**
+	 * Subscribes to given MQTT topic
+	 *
+	 * @param topic The topic to subscribe to
+	 */
 	public void subscribe(String topic) {
 		if (topic == null) {
 			throw new NullPointerException("Topic for MQTT message MUST NOT be null!");
