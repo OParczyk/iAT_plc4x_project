@@ -10,7 +10,7 @@ This project can be built using maven:
 $ mvn package
 ```
 
-The portable executable .jar file will be generated at `target/iAT_plc4x_project-0.0.1-SNAPSHOT-jar-with-dependencies.jar`
+The portable executable .jar file will be generated at `target/iAT_plc4x_project-1.0.0-jar-with-dependencies.jar`
 
 ## Notes on Licensing
 This Project links to Apache PLC4X, which is licensed under the Apache 2.0 license <cite>[[1]][1]</cite>.

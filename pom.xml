@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.olipar</groupId>
 	<artifactId>iAT_plc4x_project</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>iAT PLC4X Project</name>
 
 	<repositories>
